@@ -50,6 +50,7 @@ def accuracy(tp: int, fp: int, fn: int, tn: int) -> float:
     total = tp + fp + fn + tn
     return correct / total
 
+print(accuracy(70, 4930, 13930, 981070))
 assert accuracy(70, 4930, 13930, 981070) == 0.98114
 
 def precision(tp: int, fp: int, fn: int, tn: int) -> float:

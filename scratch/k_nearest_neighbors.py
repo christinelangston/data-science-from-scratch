@@ -25,7 +25,7 @@ def majority_vote(labels: List[str]) -> str:
 assert majority_vote(['a', 'b', 'c', 'b', 'a']) == 'b'
 
 from typing import NamedTuple
-from scratch.linear_algebra import Vector, distance
+from linear_algebra import Vector, distance
 
 class LabeledPoint(NamedTuple):
     point: Vector
@@ -55,24 +55,26 @@ def random_distances(dim: int, num_pairs: int) -> List[float]:
     return [distance(random_point(dim), random_point(dim))
             for _ in range(num_pairs)]
 
+from typing import Dict
+import csv
+from collections import defaultdict
+
+def parse_iris_row(row: List[str]) -> LabeledPoint:
+    """
+    sepal_length, sepal_width, petal_length, petal_width, class
+    """ 
+    measurements = [float(value) for value in row[:-1]]
+    # class is e.g. "Iris-virginica"; we just want "virginica"
+
+    label = row[-1].split("-")[-1]
+    
+    return LabeledPoint(measurements, label)
+
 def main():
-    from typing import Dict
-    import csv
-    from collections import defaultdict
-    
-    def parse_iris_row(row: List[str]) -> LabeledPoint:
-        """
-        sepal_length, sepal_width, petal_length, petal_width, class
-        """
-        measurements = [float(value) for value in row[:-1]]
-        # class is e.g. "Iris-virginica"; we just want "virginica"
-        label = row[-1].split("-")[-1]
-    
-        return LabeledPoint(measurements, label)
-    
+
     with open('iris.data') as f:
         reader = csv.reader(f)
-        iris_data = [parse_iris_row(row) for row in reader]
+        iris_data = [parse_iris_row(row) for row in reader if row != []]
     
     # We'll also group just the points by species/label so we can plot them.
     points_by_species: Dict[str, List[Vector]] = defaultdict(list)
@@ -99,7 +101,7 @@ def main():
                 ax[row][col].scatter(xs, ys, marker=mark, label=species)
     
     ax[-1][-1].legend(loc='lower right', prop={'size': 6})
-    # plt.show()
+    plt.show()
     
     
     
@@ -107,10 +109,11 @@ def main():
     plt.gca().clear()
     
     import random
-    from scratch.machine_learning import split_data
+    from machine_learning import split_data
     
     random.seed(12)
     iris_train, iris_test = split_data(iris_data, 0.70)
+    print("train vs test data points", len(iris_train), len(iris_test))
     assert len(iris_train) == 0.7 * 150
     assert len(iris_test) == 0.3 * 150
     
@@ -132,6 +135,7 @@ def main():
     pct_correct = num_correct / len(iris_test)
     print(pct_correct, confusion_matrix)
     
+    #separate exercise
     import tqdm
     dimensions = range(1, 101)
     
